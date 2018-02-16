@@ -1,0 +1,202 @@
+<?xml encoding="UTF-8" version="1.0"?>
+<actions>
+    <action>
+        <icon>utilities-terminal</icon>
+        <name>Open Terminal Here</name>
+        <unique-id>1458646440398952-2</unique-id>
+        <command>exo-open --working-directory %f --launch TerminalEmulator</command>
+        <description>Example for a custom action</description>
+        <patterns>*</patterns>
+        <startup-notify/>
+        <directories/>
+    </action>
+    <action>
+        <icon>system-search-symbolic</icon>
+        <name>Search catfish</name>
+        <unique-id>1486730076483180-10</unique-id>
+        <command>catfish --path=%f</command>
+        <description></description>
+        <patterns>*</patterns>
+        <directories/>
+    </action>
+    <action>
+        <icon>y-search</icon>
+        <name>Search</name>
+        <unique-id>1486730112888778-11</unique-id>
+        <command>gnome-search-tool --path=%F</command>
+        <description>Search for files and folders</description>
+        <patterns>*</patterns>
+        <directories/>
+    </action>
+    <action>
+        <icon>folder-saved-search</icon>
+        <name>Open folder as Root</name>
+        <unique-id>1486746191840975-14</unique-id>
+        <command>pkexec thunar %F</command>
+        <description></description>
+        <patterns>*</patterns>
+        <directories/>
+    </action>
+    <action>
+        <icon>Thunar</icon>
+        <name>Root Thunar</name>
+        <unique-id>1486730309975746-12</unique-id>
+        <command>pkexec thunar %f</command>
+        <description></description>
+        <patterns>*</patterns>
+        <directories/>
+    </action>
+    <action>
+        <icon>accessories-text-editor</icon>
+        <name>Edit As Root</name>
+        <unique-id>1486730395905200-13</unique-id>
+        <command>gksu -l gedit %f</command>
+        <description>Edit selected file as the root user</description>
+        <patterns>*</patterns>
+        <other-files/>
+        <text-files/>
+    </action>
+    <action>
+        <icon>applications-filesharing</icon>
+        <name>Move To</name>
+        <unique-id>1458646498825646-7</unique-id>
+        <command>mv %F $(zenity --file-selection --directory)</command>
+        <description>Move the selected files</description>
+        <patterns>*</patterns>
+        <audio-files/>
+        <image-files/>
+        <other-files/>
+        <text-files/>
+        <video-files/>
+    </action>
+    <action>
+        <icon>edit-delete-symbolic</icon>
+        <name>Delete All Empty Folders</name>
+        <unique-id>1486725000733225-1</unique-id>
+        <command>find . -type d -empty -delete</command>
+        <description>Deletes all empty folders in current directory.</description>
+        <patterns>*</patterns>
+        <directories/>
+    </action>
+    <action>
+        <icon></icon>
+        <name>Copy Pathname to Clipboard</name>
+        <unique-id>1458646486476919-6</unique-id>
+        <command>echo -n %f | xclip -i</command>
+        <description>Copies file&apos;s full pathname to the X PRIMARY selection</description>
+        <patterns>*</patterns>
+        <directories/>
+        <audio-files/>
+        <image-files/>
+        <other-files/>
+        <text-files/>
+        <video-files/>
+    </action>
+    <action>
+        <icon>insert-text</icon>
+        <name>Rename to lower-case</name>
+        <unique-id>1486725358434721-5</unique-id>
+        <command>for file in %N; do mv &quot;$file&quot; &quot;$(echo &quot;$file&quot; | tr &apos;[:upper:]&apos;
+            &apos;[:lower:]&apos;)&quot;; done
+        </command>
+        <description>Rename the currently selected files, making the filenames lower-case.</description>
+        <patterns>*</patterns>
+        <directories/>
+        <audio-files/>
+        <image-files/>
+        <other-files/>
+        <text-files/>
+        <video-files/>
+    </action>
+    <action>
+        <icon></icon>
+        <name>Slugify Filename</name>
+        <unique-id>1465554411335764-1</unique-id>
+        <command>for file in %N; do mv &quot;$file&quot; &quot;$(echo &quot;$file&quot; | tr -s &apos; &apos; | tr
+            &apos; A-Z&apos; &apos;-a-z&apos; | tr -s &apos;-&apos; | tr -c &apos;[:alnum:][:cntrl:].&apos; &apos;-&apos;)&quot;;
+            done
+        </command>
+        <description>Rename the currently selected files, making the filenames lower-case &amp; replacing spaces with
+            dashes.
+        </description>
+        <patterns>*</patterns>
+        <audio-files/>
+        <image-files/>
+        <other-files/>
+        <text-files/>
+        <video-files/>
+    </action>
+    <action>
+        <icon></icon>
+        <name>Copy Contents to Clipboard</name>
+        <unique-id>1465554421629474-2</unique-id>
+        <command>cat &quot;%F&quot; | xclip -i -selection clipboard</command>
+        <description>Copies the contents of the selected file to the clipboard.</description>
+        <patterns>*</patterns>
+        <text-files/>
+    </action>
+    <action>
+        <icon>mypaint-tool-component-sliders</icon>
+        <name>Compress with Advpng</name>
+        <unique-id>1486725406952346-6</unique-id>
+        <command>for file in %F; do advpng -z -4 -q &quot;$file&quot;; done</command>
+        <description>Runs Advpng on each of the selected PNG Files.</description>
+        <patterns>*.png</patterns>
+        <image-files/>
+    </action>
+    <action>
+        <icon>rawtherapee</icon>
+        <name>Optimize with jpegoptim</name>
+        <unique-id>1458648916927731-4</unique-id>
+        <command>for file in %F; do jpegoptim --strip-all -of &quot;$file&quot;; done</command>
+        <description>Losslessly optimize JPEGs, by optimizing the Huffman tables and stripping comments and EXIF
+            metadata from the file.
+        </description>
+        <patterns>*.jpg;*.jpeg</patterns>
+        <image-files/>
+    </action>
+    <action>
+        <icon>font-x-generic</icon>
+        <name>Install .ttf font</name>
+        <unique-id>1461313130334242-2</unique-id>
+        <command>fontinstaller %f %n</command>
+        <description>Installs a selected .ttf file</description>
+        <patterns>*.ttf;*.TTF</patterns>
+        <other-files/>
+    </action>
+    <action>
+        <icon>menu-editor</icon>
+        <name>Become an owner</name>
+        <unique-id>1466498607488223-5</unique-id>
+        <command>pkexec chown $USER -R %F/*</command>
+        <description>Changes the owner of the selected directory to the current user</description>
+        <patterns>*</patterns>
+        <startup-notify/>
+        <directories/>
+    </action>
+    <action>
+        <icon>document-properties</icon>
+        <name>Extended attributes</name>
+        <unique-id>1458648057761731-1</unique-id>
+        <command>eiciel %f</command>
+        <description>Edit extended attributes and permissions</description>
+        <patterns>*</patterns>
+        <directories/>
+        <audio-files/>
+        <image-files/>
+        <other-files/>
+        <text-files/>
+        <video-files/>
+    </action>
+    <action>
+        <icon>category-show-all</icon>
+        <name>Create Symlink</name>
+        <unique-id>1458648866477365-3</unique-id>
+        <command>ln -s %f %n.symlink</command>
+        <description>Creates a symbolic link to the selected object</description>
+        <patterns>*</patterns>
+        <directories/>
+        <other-files/>
+        <text-files/>
+    </action>
+</actions>

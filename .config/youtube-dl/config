@@ -1,0 +1,44 @@
+# Lines starting with # are comments
+
+# Always extract audio
+#-x
+
+# Do not copy the mtime
+#--no-mtime
+
+# Use this proxy
+#--proxy 127.0.0.1:3128
+
+# Save all videos under Movies directory in your home directory
+# -o ~/Movies/%(title)s.%(ext)s
+
+--ignore-errors
+--keep-video
+--format mp4
+-w     # --no-overwrites    
+
+# --write-auto-sub 
+--add-metadata 
+
+--prefer-insecure 
+--no-check-certificate 
+--no-call-home
+--console-title 
+--no-warnings
+--write-annotations 
+--audio-format mp3 
+--audio-quality 0 
+--geo-bypass 
+--yes-playlist 
+--prefer-ffmpeg  
+# --restrict-filenames
+
+--hls-prefer-ffmpeg 
+--hls-use-mpegts 
+
+--sleep-interval 5
+--max-sleep-interval 45
+
+
+
+-o "%(uploader)s__%(playlist_index)s_%(title)s_%(duration)ss_%(id)s.%(ext)s"

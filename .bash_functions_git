@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# clone git repository   $1
+# copy file(s)           $2
+# into directory         $3
+# makes the copied file(s) executable if $4 is x
+git_copy_files_from(){
+  dir=$(basename $1)
+  dir="${dir%.*}" # in case the git url ends with .git
+  prefix="/tmp/git-copy"
+  mkdir -p  "$prefix"
+  rm -rf    "$prefix/$dir"
+  git clone $1 "$prefix/$dir"
+  cp "$prefix/$dir/$2" $3
+  rm -rf    "$prefix/$dir"
+  if [  "$4" == "x" ]; then
+     chmod +x "$3/$2"
+  fi
+}

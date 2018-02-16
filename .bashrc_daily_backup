@@ -1,0 +1,34 @@
+#!/bin/bash
+
+GMAIL="~/thomas.0007@gmail.com"
+BACKUP_HOME=$GMAIL"/Backups/boxes"
+#HOSTNAME=$(hostname)
+LOGNAME=$(whoami)
+DATE=$(date +"%Y-%m-%d")
+DATETIME=$(date +"%Y-%m-%d_%H-%M-%S")
+
+BACKUP_FILE=$DATE"_merged_bash_history.txt"
+BACKUP_DIR=$BACKUP_HOME/$HOSTNAME/$LOGNAME/bash-history
+mkdir -p $BACKUP_DIR   
+
+APTIK_DIR=$BACKUP_HOME/$HOSTNAME/aptik
+mkdir -p $APTIK_DIR
+
+echo "checking for $BACKUP_DIR/$BACKUP_FILE"
+
+if [ ! -e "$BACKUP_DIR/$BACKUP_FILE" ] ; then
+    
+    echo "=========================================================================="
+    echo "First run for today. Let backup bash history and user installed packages  "	
+    
+    cp ~/.merged_bash_history "$BACKUP_DIR/$BACKUP_FILE"
+    rsync ~/.bashrc   $BACKUP_DIR/
+    rsync ~/.bash_*   $BACKUP_DIR/
+    echo "$BACKUP_FILE has been saved"
+    echo "--------------------------------------------------------------------------"
+
+    gnome-terminal --hide-menubar  --tab -e "bash -ic \" echo 'Running Aptik backup'; sudo aptik --backup-dir $APTIK_DIR --backup-ppa; sudo aptik --backup-dir $APTIK_DIR --backup-packages; sudo aptik --backup-dir $APTIK_DIR --backup-cache; sudo chown -Rf $LOGNAME:$LOGNAME $APTIK_DIR; sudo chmod -Rf 755 $APTIK_DIR/; sudo chown -Rf $LOGNAME:$LOGNAME $BACKUP_DIR; sudo chmod -Rf 755 $BACKUP_DIR/ ; read -n 1 -s \""
+
+fi
+
+

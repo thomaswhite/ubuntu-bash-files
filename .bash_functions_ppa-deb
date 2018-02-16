@@ -1,0 +1,112 @@
+#!/bin/bash
+
+deb_remove-previous-versions(){
+        cd $1
+#       echo current directory: $(pwd)
+        echo ' '
+        echo '======================================'
+	echo   Checking for previous DEB versions in $1
+        echo '======================================'
+	echo $DATETIME >> removed_old_versions.txt
+
+	for pkg in $(find *.deb -maxdepth 1  -type f  | cut -d _ -f 1 | sort -u ); do
+	    files=$(find "$pkg"\_* -maxdepth 1  -type f | sort -ur )
+	    count=$( echo "$files" | wc -l)
+	    if [ $count -gt 1 ]; then
+		rmfiles= "$(echo $files | cut -d " " -f 2-  )"
+		echo $pkg has $count versions
+                #rm -vf $rmfiles
+		# to do keep i386 file when amd64 exists
+	        for f in $rmfiles; do
+	            rm -vf $f >> removed_old_versions.txt
+		done
+	    fi
+	done
+}
+
+# deb file name in $1
+deb_check_if_installed(){
+   package="$(dpkg-deb -f  $1 | grep Package | cut -d ":" -f2) "
+   installed="$(dpkg -s $package | grep Status: | grep installed )"
+   if  [ "$installed"  != "" ]; then
+      echo 'yes'
+   fi
+}
+
+# filename of a list of .bed URL in $1
+# to reinstall eiven the package is alredy installed pass 'force' as $2
+deb_install_from_file_list(){
+  readarray files < $1
+  for f in "${files[@]}"; do
+    filename="$(basename $f)"
+
+    if [ -f $filename ]; then
+        echo " $filename is already downloaded"
+    else
+       wget $f;
+    fi
+
+    is_installed=deb_check_if_installed $filename
+    if [ "$2" == "donwload-only"]; then
+        echo " $filename is downloaded"
+    elif [ "$is_installed" != "yes" ] || [ "$2" == "force"]; then
+        echo " Installing $f"
+        sudo gdebi -n -o APT::Install-Recommends=1 "$f"
+        sudo apt-get install -fy
+    else
+       package="$(dpkg-deb -f  $f | grep Package | cut -d ":" -f2 )"
+       echo " Package $package in file $filename is already installed"
+    fi
+  done
+}
+
+# add ppa repository in $1 if the file is missing
+ppa-add() {
+  for i in "$@"; do
+    grep -h "^deb.*$i" /etc/apt/sources.list.d/*.list > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+      echo "Adding ppa:$i"
+      sudo add-apt-repository -y ppa:$i
+    else
+      echo "ppa:$i already exists"
+    fi
+  done
+}
+
+# add a repository from a previous release
+# URL in          $1
+# release name in $2
+# modifier in     $3
+# update the repository list if $4 is 'update'
+# usege: ppa-add_from-previous-release http://ppa.launchpad.net/alexx2000/doublecmd/ubuntu zesty update
+ppa-add_from-previous-release () {
+    grep -h "^deb.*$1" /etc/apt/sources.list.d/*.list > /dev/null 2>&1
+    if [ $? -ne 0 ]
+    then
+      sudo add-apt-repository -y "deb $1 $2 $3"
+      if [ "$4" == "update" ]; then
+         sudo apt-fast update
+      fi
+    else
+      echo "ppa:$1 already exists"
+    fi
+}
+
+# creates a new repository file $2
+#                  with content $1
+# adds a key with URL in        $3
+# or add key $5 from server     $4
+ppa-add-list-file_and_key() {
+    if [[ -f $2 ]]; then
+        echo "File $2 already exists"
+    else
+	    sudo sh -c 'echo "$1" > /etc/apt/sources.list.d/$2'
+    fi
+    if [ "$3" != "" ]; then
+       wget -O - $3 | sudo apt-key add -
+    else
+       if [ "$4" != "" ]; then
+        sudo apt-key adv --keyserver $4 --recv-keys $5
+       fi
+    fi
+}
