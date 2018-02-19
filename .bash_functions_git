@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # clone git repository   $1
 # copy file(s)           $2
@@ -16,4 +16,45 @@ git_copy_files_from(){
   if [  "$4" == "x" ]; then
      chmod +x "$3/$2"
   fi
+}
+
+# $1 git URL
+# $2 folder to clone/checkout
+clone_or_checkout(){
+    url=$1
+    folder=`basename $url`
+    folder="${folder%.*}"
+    path="$folder"
+
+    if [ "$2" != "" ]; then
+       path="$2/$path"
+    fic
+
+    echo "url: $url"
+    echo "folder: $folder"
+    echo "path:   $path "
+
+    if [[ ! -d "$path" ]] ; then
+        git clone "$url" "$path"
+        pushd "$path"
+        git submodule init
+    else
+        pushd "$path"
+        git pull "$url"
+    fi
+    git submodule update
+}
+
+# $1 URL /user/repository/branch/filename
+# $2 directory/filename to download to
+# $3 optional 'x' to make it executable
+# $4 optional 'group:user' for chown
+github_get_a_file(){
+    wget https://raw.githubusercontent.com"$1" -O "$2"
+    if [ "$3" == "x" ]; then
+       chmod +x "$2"
+    fi
+    if [ "$4" != "" ] && [ "$4" = "*:*" ]; then
+        chown $4 $2
+    fi
 }

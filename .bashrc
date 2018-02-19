@@ -6,13 +6,6 @@ case $- in
     *i*) ;;
       *) return;;
 esac
-
-for f in ~/.bash_functions* ; do source $f; done
-if [ -f ~/.bash_aliases ];      then . ~/.bash_aliases;     fi
-if [ -f ~/.bash_colours ];      then . ~/.bash_colours;     fi
-if [ -f ~/.bash_local ];        then . ~/.bash_local;       fi
-if [ -f ~/.bash_daily_backup ]; then . ~/.bash_daily_backup; fi
-
 #### same section copied from http://tldp.org/LDP/abs/html/sample-bashrc.html
 #-------------------------------------------------------------
 # Source global definitions (if any)
@@ -50,10 +43,13 @@ if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
     debian_chroot=$(cat /etc/debian_chroot)
 fi
 
+
+
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
     xterm-color|*-256color) color_prompt=yes;;
 esac
+
 
 # uncomment for a colored prompt, if the terminal has the capability; turned
 # off by default to not distract the user: the focus in a terminal window
@@ -81,23 +77,22 @@ fi
 unset color_prompt force_color_prompt
 
 
+
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
 if ! shopt -oq posix; then
-  if [ -f /usr/share/bash-completion/bash_completion ]; then
+  if [[ -f /usr/share/bash-completion/bash_completion ]]; then
     . /usr/share/bash-completion/bash_completion
-  elif [ -f /etc/bash_completion ]; then
+  elif [[ -f /etc/bash_completion ]]; then
     . /etc/bash_completion
   fi
 fi
-
 
 #-------------------------------------------------------------
 
 #export NVM_DIR="/home/thomas/.nvm"
 #[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
-
 
 
 export HH_CONFIG=hicolor         # get more colors
@@ -106,6 +101,13 @@ if [[ $- =~ .*i.* ]]; then bind '"\C-r": "\C-a hh \C-j"'; fi
 
 # navigate back in the history filtering only the lines that match with what has been typed so far
 bind '"\e[A":history-search-backward'
+
+# https://stackoverflow.com/questions/30023780/sorting-directory-contents-including-hidden-files-by-name-in-the-shell
+export LC_ALL=C
+
+
+mkdir -p /tmp/apt-fast
+
 
 #-------------------------------------------------------------
 # HISTORY section 
@@ -127,10 +129,12 @@ HISTFILESIZE=5000000
 #Don't save ls, ps and history commands
 export HISTIGNORE="ll:ls:ps:cd ~:cd ..:h:alias" 
 
-mkdir -p /tmp/apt-fast
 
-# https://stackoverflow.com/questions/30023780/sorting-directory-contents-including-hidden-files-by-name-in-the-shell
-export LC_ALL=C 
+for f in ~/.bash_functions* ; do source $f; done
+if [ -f ~/.bash_aliases ];      then . ~/.bash_aliases;     fi
+if [ -f ~/.bash_colours ];      then . ~/.bash_colours;     fi
+if [ -f ~/.bash_local ];        then . ~/.bash_local;       fi
+if [ -f ~/.bash_daily_backup ]; then . ~/.bash_daily_backup; fi
 
 source "$HOME"/merge_history.bash
 
