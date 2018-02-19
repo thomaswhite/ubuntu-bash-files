@@ -20,7 +20,7 @@ git_copy_files_from(){
 
 # $1 git URL
 # $2 folder to clone/checkout
-clone_or_checkout(){
+git_clone_or_checkout(){
     url=$1
     folder=`basename $url`
     folder="${folder%.*}"
@@ -28,7 +28,7 @@ clone_or_checkout(){
 
     if [ "$2" != "" ]; then
        path="$2/$path"
-    fic
+    fi
 
     echo "url: $url"
     echo "folder: $folder"
