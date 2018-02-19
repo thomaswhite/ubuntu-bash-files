@@ -52,7 +52,7 @@ clone_or_checkout(){
 github_get_a_file(){
     wget https://raw.githubusercontent.com"$1" -O "$2"
     if [ "$3" == "x" ]; then
-       chmod +x "$2"
+        chmod +x "$2"
     fi
     if [ "$4" != "" ] && [ "$4" = "*:*" ]; then
         chown $4 $2
