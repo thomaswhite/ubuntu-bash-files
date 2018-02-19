@@ -19,22 +19,25 @@ git_copy_files_from(){
 }
 
 # $1 git URL
-# $2 folder to clone/checkout
+# $2 path prefix to clone/checkout
 git_clone_or_checkout(){
     url=$1
     folder=`basename $url`
     folder="${folder%.*}"
-    path="$folder"
 
     if [ "$2" != "" ]; then
-       path="$2/$path"
+       prefix=`readlink -f  .`
+    else
+       prefix=`readlink -f  $2`
     fi
+
+    path="$prefix/folder"
 
     echo "url: $url"
     echo "folder: $folder"
     echo "path:   $path "
 
-    if [[ ! -d "$path" ]] ; then
+    if [ ! -d "$path" ] ; then
         git clone "$url" "$path"
         pushd "$path"
         git submodule init
