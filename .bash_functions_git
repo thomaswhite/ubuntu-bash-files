@@ -26,18 +26,19 @@ git_clone_or_checkout(){
     folder="${folder%.*}"
 
     if [ "$2" != "" ]; then
-       prefix=`readlink -f  .`
+       prefix=$(readlink -f "$2")
     else
-       prefix=`readlink -f  $2`
+       prefix=`readlink -f  . `
     fi
 
-    path="$prefix/folder"
+    path="$prefix/$folder"
 
-    echo "url: $url"
-    echo "folder: $folder"
-    echo "path:   $path "
+#    echo "url   : $url"
+#    echo "folder: $folder"
+#    echo "prefix: $prefix "
+#    echo "path  : $path "
 
-    if [ ! -d "$path" ] ; then
+    if [ ! -d "$path/.git" ] ; then
         git clone "$url" "$path"
         pushd "$path"
         git submodule init
