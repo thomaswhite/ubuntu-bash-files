@@ -4,6 +4,7 @@
 # copy file(s)           $2
 # into directory         $3
 # makes the copied file(s) executable if $4 is x
+unset -f git_copy_files_from
 git_copy_files_from(){
   dir=$(basename $1)
   dir="${dir%.*}" # in case the git url ends with .git
@@ -20,6 +21,7 @@ git_copy_files_from(){
 
 # $1 git URL
 # $2 path prefix to clone/checkout
+unset -f git_clone_or_checkout
 git_clone_or_checkout(){
     url=$1
     folder=`basename $url`
@@ -53,6 +55,7 @@ git_clone_or_checkout(){
 # $2 directory/filename to download to
 # $3 optional 'x' to make it executable
 # $4 optional 'group:user' for chown
+unset -f github_get_a_file
 github_get_a_file(){
     wget https://raw.githubusercontent.com"$1" -O "$2"
     if [ "$3" == "x" ]; then

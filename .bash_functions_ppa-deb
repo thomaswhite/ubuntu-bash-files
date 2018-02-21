@@ -1,5 +1,20 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
+unset -f pushd
+pushd () {
+    command pushd "$@" > /dev/null
+}
+
+unset -f popd
+popd () {
+    command popd "$@" > /dev/null
+}
+
+unset -f print_replace_line
+print_replace_line (){
+   printf "\r\033[K$1" $2 $3 $4;
+}
+unset -f deb_remove-previous-versions
 deb_remove-previous-versions(){
         cd $1
 #       echo current directory: $(pwd)
@@ -12,7 +27,7 @@ deb_remove-previous-versions(){
 	for pkg in $(find *.deb -maxdepth 1  -type f  | cut -d _ -f 1 | sort -u ); do
 	    files=$(find "$pkg"\_* -maxdepth 1  -type f | sort -ur )
 	    count=$( echo "$files" | wc -l)
-	    if [ $count -gt 1 ]; then
+	    if [[ $count -gt 1 ]] ; then
 		rmfiles= "$(echo $files | cut -d " " -f 2-  )"
 		echo $pkg has $count versions
                 #rm -vf $rmfiles
@@ -25,46 +40,87 @@ deb_remove-previous-versions(){
 }
 
 # deb file name in $1
+unset -f deb_check_if_installed
 deb_check_if_installed(){
-   package="$(dpkg-deb -f  $1 | grep Package | cut -d ":" -f2) "
-   installed="$(dpkg -s $package | grep Status: | grep installed )"
-   if  [ "$installed"  != "" ]; then
+   package="$(dpkg-deb -f  $1    2>log_dpkg-deb-f.txt | grep Package | cut -d ":" -f2) "    #
+   installed="$(dpkg -s $package 2>log_dpkg-s.txt | grep Status: | grep installed )" #
+   if  [[ "$installed"  != "" ]] ; then
       echo 'yes'
    fi
 }
 
 # filename of a list of .bed URL in $1
-# to reinstall eiven the package is alredy installed pass 'force' as $2
+# in (optional) directory  $2
+# uninstall if $3 is 'remove'
+unset -f deb_install_from_file_list
 deb_install_from_file_list(){
   readarray files < $1
+  if [[ $2 != '' ]] ; then
+     mkdir -p "$2"
+     pushd "$2"
+  fi
+  if [[ $3 == remove ]] ; then
+     action="Remove .deb packages defined in $1 from $2 "
+  else
+     action="Download in $2 .deb packages defined in $1"
+  fi
+
+  echo "--------------------------------------------------------------------------------"
+  echo " $action"
+  echo "--------------------------------------------------------------------------------"
+
   for f in "${files[@]}"; do
+    if [[ ! $f ]]  ; then
+       continue
+    fi
+
     filename="$(basename $f)"
-
-    if [ -f $filename ]; then
-        echo " $filename is already downloaded"
-    else
-       wget $f;
+    printf "\nCheck $filename"
+    if [[ ! -f $filename ]]; then
+       print_replace_line "Downloading $filename"
+       wget -q -N $f
     fi
 
-    is_installed=deb_check_if_installed $filename
-    if [ "$2" == "donwload-only"]; then
-        echo " $filename is downloaded"
-    elif [ "$is_installed" != "yes" ] || [ "$2" == "force"]; then
-        echo " Installing $f"
-        sudo gdebi -n -o APT::Install-Recommends=1 "$f"
-        sudo apt-get install -fy
-    else
-       package="$(dpkg-deb -f  $f | grep Package | cut -d ":" -f2 )"
-       echo " Package $package in file $filename is already installed"
+    if [[ ! -f $filename ]]; then
+       print_replace_line "File not found $f"
+       continue
     fi
+
+    package="$(dpkg-deb -f  $filename   | grep Package | cut -d ":" -f2 )"
+    is_installed=$(deb_check_if_installed $filename)
+
+    print_replace_line "$package "
+    if [[ $3 == remove ]] ; then
+       if [[ $is_installed == yes  ]] ; then
+            print_replace_line "Removing  ${Red}$package...${NC}"
+            done=$(sudo aptitude -y purge $package)
+            print_replace_line "${Red}Removed:${NC}   %-20s ($filename)" $package
+       else
+            print_replace_line "${On_Red}Not found:${NC} %-20s ($filename), not removed" $package
+       fi
+    else
+        if [[ $is_installed == yes ]] ; then
+           print_replace_line "Installed:  %-20s ($filename) ${Green}already${NC}" $package
+        else
+            print_replace_line "Installing:${Green}$package...${NC}"
+            sudo gdebi -q -n -o APT::Install-Recommends=1 "$filename" 1>null 2>log-gdebi.txt
+            #sudo apt-get install -fy
+            print_replace_line "${Green}Installed:${NC}  %-20s ($filename)" $package
+        fi
+     fi
   done
+  if [[ $2 != '' ]] ; then
+     popd
+  fi
+  echo ' '
 }
 
 # add ppa repository in $1 if the file is missing
+unset -f ppa-add
 ppa-add() {
   for i in "$@"; do
     grep -h "^deb.*$i" /etc/apt/sources.list.d/*.list > /dev/null 2>&1
-    if [ $? -ne 0 ]; then
+    if [[ $? -ne 0 ]] ; then
       echo "Adding ppa:$i"
       sudo add-apt-repository -y ppa:$i
     else
@@ -79,12 +135,12 @@ ppa-add() {
 # modifier in     $3
 # update the repository list if $4 is 'update'
 # usege: ppa-add_from-previous-release http://ppa.launchpad.net/alexx2000/doublecmd/ubuntu zesty update
+unset -f  ppa-add_from-previous-release
 ppa-add_from-previous-release () {
     grep -h "^deb.*$1" /etc/apt/sources.list.d/*.list > /dev/null 2>&1
-    if [ $? -ne 0 ]
-    then
+    if [[ $? -ne 0 ]] ;  then
       sudo add-apt-repository -y "deb $1 $2 $3"
-      if [ "$4" == "update" ]; then
+      if [[ "$4" == "update" ]]; then
          sudo apt-fast update
       fi
     else
@@ -96,16 +152,17 @@ ppa-add_from-previous-release () {
 #                  with content $1
 # adds a key with URL in        $3
 # or add key $5 from server     $4
+unset -f ppa-add-list-file_and_key
 ppa-add-list-file_and_key() {
     if [[ -f $2 ]]; then
         echo "File $2 already exists"
     else
 	    sudo sh -c 'echo "$1" > /etc/apt/sources.list.d/$2'
     fi
-    if [ "$3" != "" ]; then
+    if [[ "$3" != "" ]] ; then
        wget -O - $3 | sudo apt-key add -
     else
-       if [ "$4" != "" ]; then
+       if [[ "$4" != "" ]] ; then
         sudo apt-key adv --keyserver $4 --recv-keys $5
        fi
     fi

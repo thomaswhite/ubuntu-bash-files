@@ -13,6 +13,12 @@ esac
 
 if [ -f /etc/bashrc ]; then . /etc/bashrc; fi
 
+for f in ~/.bash_functions* ; do source $f; done
+if [ -f ~/.bash_local ];        then . ~/.bash_local;       fi
+if [ -f ~/.bash_aliases ];      then . ~/.bash_aliases;     fi
+if [ -f ~/.bash_colours ];      then . ~/.bash_colours;     fi
+
+
 ##################################################
 # PATH						 #
 ##################################################
@@ -130,10 +136,6 @@ HISTFILESIZE=5000000
 export HISTIGNORE="ll:ls:ps:cd ~:cd ..:h:alias" 
 
 
-for f in ~/.bash_functions* ; do source $f; done
-if [ -f ~/.bash_aliases ];      then . ~/.bash_aliases;     fi
-if [ -f ~/.bash_colours ];      then . ~/.bash_colours;     fi
-if [ -f ~/.bash_local ];        then . ~/.bash_local;       fi
 if [ -f ~/.bash_daily_backup ]; then . ~/.bash_daily_backup; fi
 
 source "$HOME"/merge_history.bash
