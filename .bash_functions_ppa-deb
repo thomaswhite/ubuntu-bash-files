@@ -77,7 +77,7 @@ deb_install_from_file_list(){
     filename="$(basename $f)"
     printf "\nCheck $filename"
     if [[ ! -f $filename ]]; then
-       print_replace_line "Downloading $filename"
+       print_replace_line "Downloading ${Yellow}$filename${NC}"
        wget -q -N $f
     fi
 
