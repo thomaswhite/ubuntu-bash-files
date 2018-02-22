@@ -42,10 +42,20 @@ deb_remove-previous-versions(){
 # deb file name in $1
 unset -f deb_check_if_installed
 deb_check_if_installed(){
-   package="$(dpkg-deb -f  $1    2>log_dpkg-deb-f.txt | grep Package | cut -d ":" -f2) "    #
-   installed="$(dpkg -s $package 2>log_dpkg-s.txt | grep Status: | grep installed )" #
-   if  [[ "$installed"  != "" ]] ; then
-      echo 'yes'
+   # TODO analyse the error logs or if $? == 0
+   #   keep the result in a variable
+   #   check $?
+   package_info="$(dpkg-deb -f  $1  2>log_dpkg-deb-f.txt )"
+   if [ $? == 0] && [ $package_info =~ 'Package:\s+(\w+)\s' ]  ; then
+       package=${BASH_REMATCH[1]}
+       installed_info="$(dpkg -s $package 2>log_dpkg-s.txt)" #  | grep Status: | grep installed )
+       if [ $? == 0 ] &&  [ $installed_info  =~ 'Status:\s?(install ok)' ]; then
+          echo 'yes'
+       else
+          echo 'package not found'
+       fi
+   else
+       echo 'file not found'
    fi
 }
 
@@ -54,8 +64,9 @@ deb_check_if_installed(){
 # uninstall if $3 is 'remove'
 unset -f deb_install_from_file_list
 deb_install_from_file_list(){
+  action
   readarray files < $1
-  if [[ $2 != '' ]] ; then
+  if [ -n $2 ] ; then
      mkdir -p "$2"
      pushd "$2"
   fi
@@ -70,9 +81,7 @@ deb_install_from_file_list(){
   echo "--------------------------------------------------------------------------------"
 
   for f in "${files[@]}"; do
-    if [[ ! $f ]]  ; then
-       continue
-    fi
+    if [ -n $f ]  ; then continue; fi
 
     filename="$(basename $f)"
     printf "\nCheck $filename"
@@ -87,11 +96,10 @@ deb_install_from_file_list(){
     fi
 
     package="$(dpkg-deb -f  $filename   | grep Package | cut -d ":" -f2 )"
-    is_installed=$(deb_check_if_installed $filename)
 
     print_replace_line "$package "
     if [[ $3 == remove ]] ; then
-       if [[ $is_installed == yes  ]] ; then
+       if [[$(deb_check_if_installed $filename) == 'yes'  ]] ; then
             print_replace_line "Removing  ${Red}$package...${NC}"
             done=$(sudo aptitude -y purge $package)
             print_replace_line "${Red}Removed:${NC}   %-20s ($filename)" $package
@@ -104,14 +112,18 @@ deb_install_from_file_list(){
         else
             print_replace_line "Installing:${Green}$package...${NC}"
             sudo gdebi -q -n -o APT::Install-Recommends=1 "$filename" 1>null 2>log-gdebi.txt
+            # TODO if $? == 0
             #sudo apt-get install -fy
-            print_replace_line "${Green}Installed:${NC}  %-20s ($filename)" $package
+            if [  $(deb_check_if_installed $filename) == 'yes' ]; then
+                print_replace_line "${Green}Installed:${NC}  %-20s ($filename)" $package
+            else
+                print_replace_line "${Red}Failed:${NC}  %-20s ($filename) thwre we problems during installation\n" $package
+                cat log-gdebi.txt
+            fi
         fi
-     fi
+    fi
   done
-  if [[ $2 != '' ]] ; then
-     popd
-  fi
+  if [ -n $2 ] ; then  popd; fi
   echo ' '
 }
 
