@@ -269,13 +269,14 @@ ppa-add_from-previous-release () {
 # or add key $5 from server     $4
 unset -f ppa-add-list-file_and_key
 ppa-add-list-file_and_key() {
-    if [[ -f $2 ]]; then
+    if [[ -f /etc/apt/sources.list.d/$2 ]]; then
         echo "File $2 already exists"
     else
-	    sudo sh -c 'echo "$1" > /etc/apt/sources.list.d/$2'
+	sudo sh -c "echo $1 > /etc/apt/sources.list.d/$2"
+	echo File /etc/apt/sources.list.d/$2 has  been created
     fi
     if [[ "$3" != "" ]] ; then
-       wget -O - $3 | sudo apt-key add -
+       wget -q -O - $3 | sudo apt-key add -
     else
        if [[ "$4" != "" ]] ; then
         sudo apt-key adv --keyserver $4 --recv-keys $5

@@ -57,11 +57,11 @@ git_clone_or_checkout(){
 # $4 optional 'group:user' for chown
 unset -f github_get_a_file
 github_get_a_file(){
-    wget https://raw.githubusercontent.com"$1" -O "$2"
+    sudo wget https://raw.githubusercontent.com"$1" -O "$2"
     if [ "$3" == "x" ]; then
-        chmod +x "$2"
+        sudo chmod +x "$2"
     fi
     if [ "$4" != "" ] && [ "$4" = "*:*" ]; then
-        chown $4 $2
+        sudo chown $4 $2
     fi
 }
