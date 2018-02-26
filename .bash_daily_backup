@@ -46,7 +46,7 @@ if [ ! -d "$BACKUP_DIR" ] ; then
 			sudo chmod -R 777 $BACKUP_DIR/; 
 			sudo chown -R $LOGNAME:$LOGNAME $BACKUP_APTIK_DIR/; 
 			sudo chmod -R 777 $BACKUP_APTIK_DIR/;  
-			deb_remove-previous-versions $BACKUP_APTIK_DIR/archives;
+			deb_leave_only_the_most_recent_version_file $BACKUP_APTIK_DIR/archives;
 			\""
              fi
     fi

@@ -14,8 +14,8 @@ unset -f print_replace_line
 print_replace_line (){
    printf "\r\033[K$1" $2 $3 $4;
 }
-unset -f deb_remove-previous-versions
-deb_remove-previous-versions(){
+unset -f deb_leave_only_the_most_recent_version_file
+deb_leave_only_the_most_recent_version_file(){
         cd $1
 #       echo current directory: $(pwd)
         echo ' '
@@ -40,8 +40,8 @@ deb_remove-previous-versions(){
 }
 
 # deb file name in $1
-unset -f deb_check_if_installed
-deb_check_if_installed(){
+unset -f deb_check_if_file_is_installed
+deb_check_if_file_is_installed(){
    package="$(dpkg-deb -f  $1    2>log_dpkg-deb-f.txt | grep Package | cut -d ":" -f2) "    #
    installed="$(dpkg -s $package 2>log_dpkg-s.txt | grep Status: | grep installed )" #
    if  [[ "$installed"  != "" ]] ; then
@@ -52,8 +52,8 @@ deb_check_if_installed(){
 # filename of a list of .bed URL in $1
 # in (optional) directory  $2
 # uninstall if $3 is 'remove'
-unset -f deb_install_from_file_list
-deb_install_from_file_list(){
+unset -f deb_install_packages_from_file_URL_list
+deb_install_packages_from_file_URL_list(){
   action
   readarray files < $1
   if [[ $2 != '' ]] ; then
@@ -88,7 +88,7 @@ deb_install_from_file_list(){
     fi
 
     package="$(dpkg-deb -f  $filename   | grep Package | cut -d ":" -f2 )"
-    is_installed=$(deb_check_if_installed $filename)
+    is_installed=$(deb_check_if_file_is_installed $filename)
 
     print_replace_line "$package "
     if [[ $3 == remove ]] ; then
@@ -119,8 +119,8 @@ deb_install_from_file_list(){
 ####################################################
 
 # $1 file.deb
-unset -f deb_package_name_out_of_file
-deb_package_name_out_of_file(){
+unset -f deb_get_package_name_from_file
+deb_get_package_name_from_file(){
    if [[ ! -f $1 ]]; then
         echo "n"
    else
@@ -137,7 +137,7 @@ deb_package_name_out_of_file(){
 # deb file name in $1
 unset -f deb_check_if_file_installed2
 deb_check_if_file_installed2(){
-   local package=$(deb_package_name_out_of_file $1)
+   local package=$(deb_get_package_name_from_file $1)
    if [ -z $package ]; then
         echo ''
    else
@@ -150,15 +150,14 @@ deb_check_if_file_installed2(){
           echo $package  "no"
        fi
    fi
-
 }
 
 
 # filename of a list of .bed URL in $1
 # in (optional) directory  $2
 # uninstall if $3 is 'remove'
-unset -f deb_install_from_file_list2
-deb_install_from_file_list2(){
+unset -f deb_install_packages_from_file_URL_list2
+deb_install_packages_from_file_URL_list2(){
   local action=''
   local files=''
   readarray files < $1
@@ -231,8 +230,8 @@ deb_install_from_file_list2(){
 
 
 # add ppa repository in $1 if the file is missing
-unset -f ppa-add
-ppa-add() {
+unset -f ppa_add
+ppa_add() {
   for i in "$@"; do
     grep -h "^deb.*$i" /etc/apt/sources.list.d/*.list > /dev/null 2>&1
     if [[ $? -ne 0 ]] ; then
@@ -249,9 +248,9 @@ ppa-add() {
 # release name in $2
 # modifier in     $3
 # update the repository list if $4 is 'update'
-# usege: ppa-add_from-previous-release http://ppa.launchpad.net/alexx2000/doublecmd/ubuntu zesty update
-unset -f  ppa-add_from-previous-release
-ppa-add_from-previous-release () {
+# usege: ppa_add_from_previous_release http://ppa.launchpad.net/alexx2000/doublecmd/ubuntu zesty update
+unset -f  ppa_add_from_previous_release
+ppa_add_from_previous_release () {
     grep -h "^deb.*$1" /etc/apt/sources.list.d/*.list > /dev/null 2>&1
     if [[ $? -ne 0 ]] ;  then
       sudo add-apt-repository -y "deb $1 $2 $3"
@@ -267,8 +266,8 @@ ppa-add_from-previous-release () {
 #                  with content $1
 # adds a key with URL in        $3
 # or add key $5 from server     $4
-unset -f ppa-add-list-file_and_key
-ppa-add-list-file_and_key() {
+unset -f ppa_add_list_file_and_key
+ppa_add_list_file_and_key() {
     if [[ -f /etc/apt/sources.list.d/$2 ]]; then
         echo "File $2 already exists"
     else
