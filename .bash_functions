@@ -111,11 +111,6 @@ function ii()   # Get current host related info.
 
 #-------------------------------------------------------------
 
-mcd () {
-    mkdir -p $1
-    cd $1
-}
-
 function run_in_terminal {
   xfce4-terminal --geometry 120x35  -H --hide-menubar --title="$1" --command "$2"
 }
@@ -144,22 +139,6 @@ function 64font() {
 	echo "$1 encoded as font and copied to clipboard"
 }
 
-
-## ---------------------------
-## Print a horizontal rule
-rule () {
-	printf -v _hr "%*s" $(tput cols) && echo ${_hr// /${1--}}
-}
-
-## Print a horizontal rule with a message
-rulem ()  {
-	if [ $# -eq 0 ]; then
-		echo "Usage: rulem MESSAGE [RULE_CHARACTER]"
-		return 1
-	fi
-	# Fill line with ruler character ($2, default "-"), reset cursor, move 2 cols right, print message
-	printf -v _hr "%*s" $(tput cols) && echo -en ${_hr// /${2--}} && echo -e "\r\033[2C$1"
-}
 
 ## http://brettterpstra.com/2015/01/05/sizeup-tidy-filesize-information-in-terminal/
 __sizeup_build_query () {
@@ -298,15 +277,5 @@ matches () {
 	done
 
 	IFS=$OLDIFS
-}
-
-## http://brettterpstra.com/2015/11/24/shell-tricks-quick-line-numbering/
-# output a text file with line numbers
-lno() {
-    if [ $# == 0 ]; then
-        echo "No filename provided."
-    else
-        sed = "$1" | paste -s -d '\t\n' - -
-    fi
 }
 

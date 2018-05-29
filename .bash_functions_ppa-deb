@@ -1,19 +1,5 @@
 #!/usr/bin/env bash
 
-unset -f pushd
-pushd () {
-    command pushd "$@" > /dev/null
-}
-
-unset -f popd
-popd () {
-    command popd "$@" > /dev/null
-}
-
-unset -f print_replace_line
-print_replace_line (){
-   printf "\r\033[K$1" $2 $3 $4;
-}
 unset -f deb_leave_only_the_most_recent_version_file
 deb_leave_only_the_most_recent_version_file(){
         cd $1

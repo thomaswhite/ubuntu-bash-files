@@ -1,5 +1,21 @@
 #!/usr/bin/env bash
 
+unset -f pushd
+pushd () {
+    command pushd "$@" > /dev/null
+}
+
+unset -f popd
+popd () {
+    command popd "$@" > /dev/null
+}
+
+unset -f print_replace_line
+print_replace_line (){
+   printf "\r\033[K$1" $2 $3 $4;
+}
+
+
 # clone git repository   $1
 # copy file(s)           $2
 # into directory         $3
