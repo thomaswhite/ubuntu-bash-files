@@ -24,4 +24,4 @@ source .bash_functions_print
 popd
 
 # rulem " $(date +%Y-%m-%d:%H:%M:%S), running file: ${0##*/} "
-rulem " Running file: ${0##*/}, $1 " "="
+rulem " $1 " "="
