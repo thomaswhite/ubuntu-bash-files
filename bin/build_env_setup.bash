@@ -12,9 +12,10 @@ pushd $download_path
 
 #declare -F | grep ppa
 # if [ -n "$(declare -F git_clone_or_checkout)"  ]; then
-wget -q https://raw.githubusercontent.com/thomaswhite/ubuntu-bash-files/master/.bash_functions_git
-wget -q https://raw.githubusercontent.com/thomaswhite/ubuntu-bash-files/master/.bash_functions_ppa-deb
-wget -q https://raw.githubusercontent.com/thomaswhite/ubuntu-bash-files/master/.bash_functions_print
+wget -N -q https://raw.githubusercontent.com/thomaswhite/ubuntu-bash-files/master/.bash_functions_git
+wget -N -q https://raw.githubusercontent.com/thomaswhite/ubuntu-bash-files/master/.bash_functions_ppa-deb
+wget -N -q https://raw.githubusercontent.com/thomaswhite/ubuntu-bash-files/master/.bash_functions_print
+wget -N -q https://raw.githubusercontent.com/thomaswhite/ubuntu-bash-files/master/.bash_functions_dir
 source .bash_functions_git
 source .bash_functions_ppa-deb
 source .bash_functions_dir
