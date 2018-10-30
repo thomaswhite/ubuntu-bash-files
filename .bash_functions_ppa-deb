@@ -213,8 +213,6 @@ deb_install_packages_from_file_URL_list2(){
 
 ######################################################
 
-
-
 # add ppa repository in $1 if the file is missing
 unset -f ppa_add
 ppa_add() {
@@ -266,5 +264,17 @@ ppa_add_list_file_and_key() {
        if [[ "$4" != "" ]] ; then
         sudo apt-key adv --keyserver $4 --recv-keys $5
        fi
+    fi
+}
+
+# creates a new repository file $1
+#                  with content $2
+#               with public key $3
+unset -f ppa_add_file_and_key
+ppa_add_file_and_key() {
+	sudo sh -c "echo $1 > /etc/apt/sources.list.d/$2"
+	echo File /etc/apt/sources.list.d/$2 has  been created
+    if [[ "$3" != "" ]] ; then
+       wget -q -O - $3 | sudo apt-key add -
     fi
 }
