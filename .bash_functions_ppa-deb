@@ -272,8 +272,8 @@ ppa_add_list_file_and_key() {
 #               with public key $3
 unset -f ppa_add_file_and_key
 ppa_add_file_and_key() {
-	sudo sh -c "echo $1 > /etc/apt/sources.list.d/$2"
-	echo File /etc/apt/sources.list.d/$2 has  been created
+	sudo sh -c "echo '$2' > /etc/apt/sources.list.d/$1"
+	echo File /etc/apt/sources.list.d/$1 has  been created
     if [[ "$3" != "" ]] ; then
        wget -q -O - $3 | sudo apt-key add -
     fi
