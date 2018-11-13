@@ -3,10 +3,11 @@
 GMAIL="~/thomas.0007@gmail.com"
 #HOSTNAME=$(hostname)
 LOGNAME=$(whoami)
+source /etc/lsb-release # DISTRIB_ID, DISTRIB_RELEASE, DISTRIB_CODENAME, DISTRIB_DESCRIPTION
 DATE=$(date +"%Y-%m-%d")
 DATETIME=$(date +"%Y-%m-%d_%H-%M-%S")
 
-BACKUP_ROOT=~/thomas.0007@gmail.com/Backups/boxes/$HOSTNAME
+BACKUP_ROOT=~/thomas.0007@gmail.com/Backups/boxes/$HOSTNAME/$DISTRIB_RELEASE
 BACKUP_APTIK_DIR=$BACKUP_ROOT/aptik
 BACKUP_USER=$BACKUP_ROOT/$LOGNAME
 BACKUP_DIR=$BACKUP_USER/$DATE
@@ -31,7 +32,7 @@ if [ ! -d "$BACKUP_DIR" ] ; then
 		    echo " apt upgrade and Aptik backup will run in another window"
 		    echo "--------------------------------------------------------------------------"
 		    
-		    gnome-terminal --hide-menubar --geometry=115x30 --tab -e "bash -ic \" 
+		    gnome-terminal --hide-menubar --geometry=115x30 --tab -- "bash -ic \"
 			echo 'Running Aptik backup, this window will close automatically'; 
 			sudo apt-fast -y update ; 
 			sudo apt-fast -y upgrade ; 
