@@ -17,7 +17,7 @@ for f in ~/.bash_functions* ; do source $f; done
 if [ -f ~/.bash_local ];        then . ~/.bash_local;       fi
 if [ -f ~/.bash_aliases ];      then . ~/.bash_aliases;     fi
 if [ -f ~/.bash_colours ];      then . ~/.bash_colours;     fi
-
+if [ -f ~/.bash_path ];         then . ~/.bash_path;     	fi
 
 ##################################################
 # PATH						 #
@@ -109,7 +109,7 @@ if [[ $- =~ .*i.* ]]; then bind '"\C-r": "\C-a hh \C-j"'; fi
 bind '"\e[A":history-search-backward'
 
 # https://stackoverflow.com/questions/30023780/sorting-directory-contents-including-hidden-files-by-name-in-the-shell
-export LC_ALL=C
+### export LC_ALL=C
 
 
 mkdir -p /tmp/apt-fast
